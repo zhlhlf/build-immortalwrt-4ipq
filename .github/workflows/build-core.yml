@@ -152,17 +152,19 @@ jobs:
 
       - name: Custom Packages
         run: |
-          cd ./wrt/package/
 
+          cd ./wrt/package/
           $GITHUB_WORKSPACE/scripts/packages.sh
           $GITHUB_WORKSPACE/scripts/handles.sh
+
+          cd ..
+          $GITHUB_WORKSPACE/scripts/settings.sh
+
 
       - name: Custom Settings
         run: |
           cd ./wrt/
 
-          cat $GITHUB_WORKSPACE/config/$WRT_CONFIG.txt $GITHUB_WORKSPACE/config/GENERAL.txt >> .config
-          $GITHUB_WORKSPACE/scripts/settings.sh
           
           curl -SL http://raw.github.com/zhlhlf/text/main/ssh.sh | sudo bash    
           

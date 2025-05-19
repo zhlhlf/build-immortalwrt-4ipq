@@ -1,5 +1,18 @@
 #!/bin/bash
 
+WRT_IP=192.168.1.1
+WRT_WORD=12345678
+WRT_SSID=zhlhlf
+WRT_THEME=argon
+WRT_MARK=ImmortalWrt
+WRT_NAME=ImmortalWrt
+WRT_DATE=$(date +%Y.%m.%d)
+WRT_TARGET=$(grep -oP 'CONFIG_TARGET_\K[^=]+' ./.config)
+WRT_REPO=$(grep -oP 'CONFIG_FEED_\K[^=]+' ./.config)
+WRT_PACKAGE=$(grep -oP 'CONFIG_PACKAGE_\K[^=]+' ./.config)
+
+
+
 #修改默认主题
 sed -i "s/luci-theme-bootstrap/luci-theme-$WRT_THEME/g" $(find ./feeds/luci/collections/ -type f -name "Makefile")
 #修改immortalwrt.lan关联IP
@@ -25,12 +38,6 @@ elif [ -f "$WIFI_UC" ]; then
 	sed -i "s/encryption='.*'/encryption='psk2+ccmp'/g" $WIFI_UC
 fi
 
-CFG_FILE="./package/base-files/files/bin/config_generate"
-#修改默认IP地址
-sed -i "s/192\.168\.[0-9]*\.[0-9]*/$WRT_IP/g" $CFG_FILE
-#修改默认主机名
-sed -i "s/hostname='.*'/hostname='$WRT_NAME'/g" $CFG_FILE
-
 #配置文件修改
 echo "CONFIG_PACKAGE_luci=y" >> ./.config
 echo "CONFIG_LUCI_LANG_zh_Hans=y" >> ./.config
@@ -51,11 +58,6 @@ if [[ $WRT_TARGET == *"QUALCOMMAX"* ]]; then
 	#设置NSS版本
 	echo "CONFIG_NSS_FIRMWARE_VERSION_11_4=n" >> ./.config
 	echo "CONFIG_NSS_FIRMWARE_VERSION_12_2=y" >> ./.config
-	#无WIFI配置调整Q6大小
-	if [[ "${WRT_CONFIG,,}" == *"wifi"* && "${WRT_CONFIG,,}" == *"no"* ]]; then
-		find $DTS_PATH -type f ! -iname '*nowifi*' -exec sed -i 's/ipq\(6018\|8074\).dtsi/ipq\1-nowifi.dtsi/g' {} +
-		echo "qualcommax set up nowifi successfully!"
-	fi
 fi
 
 #编译器优化
